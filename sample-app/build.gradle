@@ -9,8 +9,8 @@ buildscript {
     }
 }
 
+apply plugin: 'android-sdk'
 apply plugin: 'android'
-
 
 repositories {
     mavenCentral()
@@ -26,4 +26,3 @@ android {
     }
 }
 
-apply plugin: 'android-sdk'

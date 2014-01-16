@@ -1,0 +1,49 @@
+apply plugin: 'idea'
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'groovy'
+apply plugin: 'signing'
+
+group = 'org.robospock'
+version = '0.0.1'
+ext.packaging = 'jar'
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from 'build/docs/javadoc'
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+artifacts {
+    archives jar
+    archives javadocJar
+    archives sourcesJar
+}
+
+repositories {
+    mavenCentral()
+}
+
+signing {
+    sign configurations.archives
+}
+
+dependencies {
+    compile gradleApi()
+    compile 'com.android.tools.build:gradle:0.7.+'
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Gradle robospock plugin',
+                'Implementation-Version': version,
+                'Built-By': System.getProperty('user.name'),
+                'Built-Date': new Date(),
+                'Built-JDK': System.getProperty('java.version'),
+                'Built-Gradle': gradle.gradleVersion
+    }
+}

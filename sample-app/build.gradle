@@ -1,0 +1,29 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:0.7.+'
+        classpath 'org.robospock:android-sdk-plugin:0.0.1'
+    }
+}
+
+apply plugin: 'android'
+
+
+repositories {
+    mavenCentral()
+}
+
+android {
+    compileSdkVersion 11
+    buildToolsVersion "19.0.1"
+
+    defaultConfig {
+        minSdkVersion 18
+        targetSdkVersion 19
+    }
+}
+
+apply plugin: 'android-sdk'

@@ -18,17 +18,17 @@ class AndroidSdkPlugin implements Plugin<Project> {
             def androidBin = androidSdk + "/tools/android"
 
             if (checkForBuildTools(androidSdk, revision))
-                println "build-tools-${revision} found"
+                project.logger.lifecycle "Found Android build tools version '${revision}'"
             else {
-                println "build-tools-${revision} not found. Downloading."
-                downloadBuildTools(androidBin, revision)
+                project.logger.lifecycle "Not found Android build tools version '${revision}' -> downloading..."
+                downloadBuildTools(project,androidBin, revision)
             }
 
             if (checkForSdk(androidBin, compileSdkVersion)) {
-                println "${compileSdkVersion} found."
+                project.logger.lifecycle "Found Android SDK version '${compileSdkVersion}'"
             } else {
-                println "${compileSdkVersion} not found. Downloading ..."
-                downloadSdk(androidBin, compileSdkVersion)
+                project.logger.lifecycle "Not found Android SDK version '${compileSdkVersion}' -> downloading..."
+                downloadSdk(project, androidBin, compileSdkVersion)
             }
         }
     }
@@ -42,13 +42,13 @@ class AndroidSdkPlugin implements Plugin<Project> {
         return process.text.contains(compileSdkVersion)
     }
 
-    void downloadSdk(String androidBin, String compileSdkVersion) {
+    void downloadSdk(Project project, String androidBin, String compileSdkVersion) {
         def command = "${androidBin} update sdk --filter ${compileSdkVersion} --no-ui"
 
         def process = command.execute()
 
         Thread.start {
-            acceptLicence(process)
+            acceptLicence(project, process)
         }
 
         process.waitFor()
@@ -59,19 +59,19 @@ class AndroidSdkPlugin implements Plugin<Project> {
         availableBuildTools.contains(revision)
     }
 
-    void downloadBuildTools(String androidBin, String revision) {
+    void downloadBuildTools(Project project, String androidBin, String revision) {
         def command = "${androidBin} update sdk -u -a -t build-tools-${revision}"
 
         def process = command.execute()
 
         Thread.start {
-            acceptLicence(process)
+            acceptLicence(project, process)
         }
 
         process.waitFor()
     }
 
-    private void acceptLicence(Process process) {
+    private void acceptLicence(Project project, Process process) {
         def reader = new BufferedReader(new InputStreamReader(process.in))
         def writer = new PrintWriter(new BufferedOutputStream(process.out))
         writer.println('y\n')
@@ -79,7 +79,7 @@ class AndroidSdkPlugin implements Plugin<Project> {
 
         def next
         while ((next = reader.readLine()) != null) {
-            println next
+            project.logger.info next
         }
     }
 

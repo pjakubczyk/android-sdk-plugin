@@ -1,11 +1,9 @@
-apply plugin: 'idea'
-apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'groovy'
 apply plugin: 'signing'
 
-group = 'org.robospock'
-version = '0.0.1'
+group = 'org.jakubczyk'
+version = '0.1'
 ext.packaging = 'jar'
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
@@ -34,7 +32,7 @@ signing {
 
 dependencies {
     compile gradleApi()
-    compile 'com.android.tools.build:gradle:0.7.+'
+    compile 'com.android.tools.build:gradle:0.8.3'
 }
 
 jar {
@@ -45,5 +43,48 @@ jar {
                 'Built-Date': new Date(),
                 'Built-JDK': System.getProperty('java.version'),
                 'Built-Gradle': gradle.gradleVersion
+    }
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2") {
+                authentication(userName: sonatypeUsername, password: sonatypePassword)
+            }
+            pom.project {
+                name 'Android-sdk gradle plugin'
+                packaging = 'jar'
+
+                description 'Downloading android sdk version based on information stored in buildscript.'
+                url '\'https://github.com/pjakubczyk/android-sdk-plugin'
+                inceptionYear '2014'
+
+                scm {
+                    url 'https://github.com/pjakubczyk/android-sdk-plugin'
+                    connection 'scm:git@github.com:pjakubczyk/android-sdk-plugin.git'
+                    developerConnection 'scm:git@github.com:pjakubczyk/android-sdk-plugin.git'
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        distribution 'repo'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'pjakubczyk'
+                        name 'Przemek Jakubczyk'
+                        email 'pjakubczyk@gmail.com'
+                    }
+                }
+            }
+        }
     }
 }

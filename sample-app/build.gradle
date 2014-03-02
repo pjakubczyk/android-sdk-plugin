@@ -4,8 +4,8 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.7.+'
-        classpath 'org.robospock:android-sdk-plugin:0.0.1'
+        classpath 'com.android.tools.build:gradle:0.8.3'
+        classpath 'org.jakubczyk:android-sdk-plugin:0.1'
     }
 }
 
@@ -18,7 +18,7 @@ repositories {
 
 android {
     compileSdkVersion 15
-    buildToolsVersion "18.1"
+    buildToolsVersion "19.0.1"
 
     defaultConfig {
         minSdkVersion 18

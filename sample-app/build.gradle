@@ -5,7 +5,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:0.8.3'
-        classpath 'org.jakubczyk:android-sdk-plugin:0.1'
+        classpath 'org.jakubczyk:android-sdk-plugin:0.2'
     }
 }
 

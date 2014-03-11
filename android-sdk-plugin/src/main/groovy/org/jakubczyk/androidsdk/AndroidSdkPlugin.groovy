@@ -1,4 +1,4 @@
-package org.robospock.androidsdk
+package org.jakubczyk.androidsdk
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -14,8 +14,9 @@ class AndroidSdkPlugin implements Plugin<Project> {
             def revision = project.android.getBuildToolsRevision() as String
 
             // nasty fallback since IntelliJ doesn't read .bashrc
-            def androidSdk = System.getenv("ANDROID_HOME") ?: System.getenv("LD_LIBRARY_PATH")[0..-5] + "sdk"
-            def androidBin = androidSdk + "/tools/android"
+            def androidSdk = (System.getenv("ANDROID_HOME") ?: System.getenv("LD_LIBRARY_PATH")[0..-5] + "sdk")
+
+            def androidBin = (androidSdk + "/tools/android")
 
             if (checkForBuildTools(androidSdk, revision))
                 project.logger.lifecycle "Found Android build tools version '${revision}'"
@@ -34,7 +35,7 @@ class AndroidSdkPlugin implements Plugin<Project> {
     }
 
     boolean checkForSdk(String androidBin, String compileSdkVersion) {
-        def command = "${androidBin} list target -c"
+        def command = [androidBin, "list", "target", "-c"]
 
         def process = command.execute()
         process.waitFor()
@@ -43,7 +44,7 @@ class AndroidSdkPlugin implements Plugin<Project> {
     }
 
     void downloadSdk(Project project, String androidBin, String compileSdkVersion) {
-        def command = "${androidBin} update sdk --filter ${compileSdkVersion} --no-ui"
+        def command = [androidBin, "update", "sdk", "--filter", compileSdkVersion, "--no-ui"]
 
         def process = command.execute()
 
@@ -60,7 +61,7 @@ class AndroidSdkPlugin implements Plugin<Project> {
     }
 
     void downloadBuildTools(Project project, String androidBin, String revision) {
-        def command = "${androidBin} update sdk -u -a -t build-tools-${revision}"
+        def command = [androidBin, "update", "sdk", "-u", "-a", "-t", "build-tools-${revision}"]
 
         def process = command.execute()
 

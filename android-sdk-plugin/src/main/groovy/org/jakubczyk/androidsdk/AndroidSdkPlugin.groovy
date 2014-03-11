@@ -31,7 +31,52 @@ class AndroidSdkPlugin implements Plugin<Project> {
                 project.logger.lifecycle "Not found Android SDK version '${compileSdkVersion}' -> downloading..."
                 downloadSdk(project, androidBin, compileSdkVersion)
             }
+
+
+            try {
+                def androidProjectDependenciesList = new ArrayList()
+
+                project.dependencies.each {
+                    androidProjectDependenciesList = it.configurationContainer.all.find {
+                        it.name == 'compile'
+                    }.getAllDependencies()
+                }
+
+                def androidExtras = new File(androidSdk + "extras/android/m2repository/").exists()
+                def googleExtras = new File(androidSdk + "extras/google/m2repository/").exists()
+
+                // extra-android-m2repository
+                // extra-google-m2repository
+
+                androidProjectDependenciesList.each {
+                    if(!androidExtras && it.group == "com.android.support") {
+                        project.logger.lifecycle "Downloading Android Support Repository"
+                        downloadExtra(project, androidBin, "extra-android-m2repository")
+                    }
+
+                    if (!googleExtras && it.group == "com.google.android.gms") {
+                        project.logger.lifecycle "Downloading Google Repository"
+                        downloadExtra(project, androidBin, "extra-google-m2repository")
+                    }
+                }
+            } catch (Exception e) {
+                println e
+            }
         }
+
+
+    }
+
+    def downloadExtra(Project project, String androidBin, String bundle) {
+        def command = [androidBin, "update", "sdk", "-u", "-a", "-t", bundle]
+
+        def process = command.execute()
+
+        Thread.start {
+            acceptLicence(project, process)
+        }
+
+        process.waitFor()
     }
 
     boolean checkForSdk(String androidBin, String compileSdkVersion) {

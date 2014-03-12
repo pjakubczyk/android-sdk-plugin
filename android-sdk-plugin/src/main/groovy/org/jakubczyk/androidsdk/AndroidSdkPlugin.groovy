@@ -22,7 +22,7 @@ class AndroidSdkPlugin implements Plugin<Project> {
                 project.logger.lifecycle "Found Android build tools version '${revision}'"
             else {
                 project.logger.lifecycle "Not found Android build tools version '${revision}' -> downloading..."
-                downloadBuildTools(project,androidBin, revision)
+                downloadBuildTools(project, androidBin, revision)
             }
 
             if (checkForSdk(androidBin, compileSdkVersion)) {
@@ -34,13 +34,7 @@ class AndroidSdkPlugin implements Plugin<Project> {
 
 
             try {
-                def androidProjectDependenciesList = new ArrayList()
-
-                project.dependencies.each {
-                    androidProjectDependenciesList = it.configurationContainer.all.find {
-                        it.name == 'compile'
-                    }.getAllDependencies()
-                }
+                def androidProjectDependenciesList = project.configurations.compile.getAllDependencies()
 
                 def androidExtras = new File(androidSdk + "extras/android/m2repository/").exists()
                 def googleExtras = new File(androidSdk + "extras/google/m2repository/").exists()
@@ -49,7 +43,8 @@ class AndroidSdkPlugin implements Plugin<Project> {
                 // extra-google-m2repository
 
                 androidProjectDependenciesList.each {
-                    if(!androidExtras && it.group == "com.android.support") {
+                    println it
+                    if (!androidExtras && it.group == "com.android.support") {
                         project.logger.lifecycle "Downloading Android Support Repository"
                         downloadExtra(project, androidBin, "extra-android-m2repository")
                     }
@@ -102,7 +97,8 @@ class AndroidSdkPlugin implements Plugin<Project> {
 
     boolean checkForBuildTools(String androidSdk, String revision) {
         def availableBuildTools = new File(androidSdk + "/build-tools").list() as List
-        availableBuildTools.contains(revision)
+
+        availableBuildTools == null ? false : availableBuildTools.contains(revision)
     }
 
     void downloadBuildTools(Project project, String androidBin, String revision) {

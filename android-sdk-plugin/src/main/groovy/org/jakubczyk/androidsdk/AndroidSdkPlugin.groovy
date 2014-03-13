@@ -43,7 +43,6 @@ class AndroidSdkPlugin implements Plugin<Project> {
                 // extra-google-m2repository
 
                 androidProjectDependenciesList.each {
-                    println it
                     if (!androidExtras && it.group == "com.android.support") {
                         project.logger.lifecycle "Downloading Android Support Repository"
                         downloadExtra(project, androidBin, "extra-android-m2repository")

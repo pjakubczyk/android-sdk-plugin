@@ -3,7 +3,7 @@ apply plugin: 'groovy'
 apply plugin: 'signing'
 
 group = 'org.jakubczyk'
-version = '0.2'
+version = '0.2.1'
 ext.packaging = 'jar'
 
 task javadocJar(type: Jar, dependsOn: javadoc) {

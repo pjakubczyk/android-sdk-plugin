@@ -13,10 +13,13 @@ class AndroidSdkPlugin implements Plugin<Project> {
             def compileSdkVersion = project.android.getCompileSdkVersion() as String
             def revision = project.android.getBuildToolsRevision() as String
 
-            // nasty fallback since IntelliJ doesn't read .bashrc
-            def androidSdk = (System.getenv("ANDROID_HOME") ?: System.getenv("LD_LIBRARY_PATH")[0..-5] + "sdk")
+            def androidSdk = System.getenv("ANDROID_HOME")
+
+            if (!androidSdk) return
 
             def androidBin = (androidSdk + "/tools/android")
+
+
 
             if (checkForBuildTools(androidSdk, revision))
                 project.logger.lifecycle "Found Android build tools version '${revision}'"
